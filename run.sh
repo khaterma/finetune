@@ -5,7 +5,7 @@
 
 # Define a name for your job
 #SBATCH --job-name HelloCluster             # short: -J <job name>
-
+#SBATCH --gpu=1
 # Define the files to write the outputs of the job to.
 # Please note the SLURM will not create this directory for you, and if it is missing, no logs will be saved.
 # You must create the directory yourself. In this case, that means you have to create the "logs" directory yourself.
