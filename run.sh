@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # Define the partition on which the job shall run.
-# short: -p <partition_name>
+# short: -p alldlc_gpu-rtx3080
+#SBATCH --partition alldlc_gpu-rtx3080
 
 # Define a name for your job
 #SBATCH --job-name HelloCluster             # short: -J <job name>
-#SBATCH --gpus=1
+#SBATCH --gres=gpu:1
+
 # Define the files to write the outputs of the job to.
 # Please note the SLURM will not create this directory for you, and if it is missing, no logs will be saved.
 # You must create the directory yourself. In this case, that means you have to create the "logs" directory yourself.
 
-#SBATCH --output logs/%x-%A-HelloCluster.out   # STDOUT  %x and %A will be replaced by the job name and job id, respectively. short: -o logs/%x-%A-job_name.out
-#SBATCH --error logs/%x-%A-HelloCluster.err    # STDERR  short: -e logs/%x-%A-job_name.out
+#SBATCH --output /work/dlclarge2/khaterm-nltoSPARQL/finetune/logs/%x-%A-HelloCluster.out   # STDOUT  %x and %A will be replaced by the job name and job id, respectively. short: -o logs/%x-%A-job_name.out
+#SBATCH --error /work/dlclarge2/khaterm-nltoSPARQL/finetune/logs/%x-%A-HelloCluster.err    # STDERR  short: -e logs/%x-%A-job_name.out
 
 # Define the amount of memory required per node
 #SBATCH --mem 8GB
