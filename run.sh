@@ -26,13 +26,13 @@ echo "Running job $SLURM_JOB_NAME using $SLURM_JOB_CPUS_PER_NODE cpus per node w
 # You can also comment out this line, and activate your environment in the login node before submitting the job
 #source ~/miniconda3/bin/activate # Adjust to your path of Miniconda installation
 #conda activate hello_cluster_env
-source ~/venv/bin/activate
+source /work/dlclarge2/khaterm-nltoSPARQL/venv/bin/activate
 pip install -r requirements.txt
 
 # Running the job
 start=`date +%s`
 
-python finetune_script.py --cuda --wait-time 5
+python3 finetune_script.py --cuda --wait-time 5
 
 end=`date +%s`
 runtime=$((end-start))
