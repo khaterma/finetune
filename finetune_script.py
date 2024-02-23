@@ -51,7 +51,7 @@ class fine_tune_llm():
             evaluation_strategy="steps",
             #eval_steps=20, # comment out this line if you want to evaluate at the end of each epoch
             learning_rate=2e-4,
-            fp16=True,
+            fp16=False,
             lr_scheduler_type='cosine',
             )
 
