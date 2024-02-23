@@ -18,6 +18,7 @@ import logging
 
 
 
+
 class fine_tune_llm():
     def __init__(self):
         self.model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.1"
@@ -87,11 +88,13 @@ class fine_tune_llm():
         train['question'] = train['question'].astype(str)
         test['question'] = test['question'].astype(str)
         dataset = Dataset.from_pandas(train)
+        eval_dataset = dataset.select(range(500))
+        train_dataset = dataset.select(range(500, len(dataset)))
         test_dataset = Dataset.from_pandas(test)
         #test_dataset = Dataset.from_pandas(test)
         #self.dataset = self.dataset.map(self.tokenize_function, batched=True)
 
-        return dataset, test_dataset
+        return train_dataset, eval_dataset
     
     def logger(self):
         file_handler = logging.FileHandler("fine_tune.log")
@@ -125,9 +128,13 @@ class fine_tune_llm():
 
 
 fine_tune_llm = fine_tune_llm()
-fine_tune_llm.logger()
+logger = fine_tune_llm.logger()
+logging.info("Logger initiated")
+
 dataset , test = fine_tune_llm.prepare_dataset()
-model, tokenizer = fine_tune_llm.load_model()
+logging.info("dataset prepared and split into train and test sets")
+
+print("Dataset prepared")
 
 
 
