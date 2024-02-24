@@ -2,11 +2,11 @@
 
 # Define the partition on which the job shall run.
 # short: -p alldlc_gpu-rtx3080
-#SBATCH --partition alldlc_gpu-rtx3080
+#SBATCH --partition alldlc_gpu-rtx2080
 
 # Define a name for your job
 #SBATCH --job-name HelloCluster             # short: -J <job name>
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:4
 
 # Define the files to write the outputs of the job to.
 # Please note the SLURM will not create this directory for you, and if it is missing, no logs will be saved.
@@ -16,7 +16,8 @@
 #SBATCH --error /work/dlclarge2/khaterm-nltoSPARQL/finetune/logs/%x-%A-HelloCluster.err    # STDERR  short: -e logs/%x-%A-job_name.out
 
 # Define the amount of memory required per node
-#SBATCH --mem 8GB
+#SBATCH --mem 40GB
+#SBATCH --time=10:00
 
 echo "Workingdir: $PWD";
 echo "Started at $(date)";
@@ -34,10 +35,11 @@ pip install -r requirements.txt
 # Running the job
 start=`date +%s`
 
-python3 finetune_script.py --cuda --wait-time 5
+python3 finetune_script.py
 
 end=`date +%s`
 runtime=$((end-start))
+echo father I have failed you
 
 echo Job execution complete.
 echo Runtime: $runtime

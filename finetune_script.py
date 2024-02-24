@@ -133,7 +133,7 @@ logging.info("Logger initiated")
 
 dataset , test = fine_tune_llm.prepare_dataset()
 logging.info("dataset prepared and split into train and test sets")
-print(torch.cuda.is_available())
-
+model, tokenizer = fine_tune_llm.load_model()
+logging("Model loaded")
 print("Dataset prepared")
 
