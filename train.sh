@@ -11,7 +11,6 @@
 #SBATCH --time=10:00
 
 
-set -x -e
 
 echo "Workingdir: $PWD";
 echo "Started at $(date)";
@@ -36,7 +35,8 @@ MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
 MASTER_PORT=6000
 NNODES=$SLURM_NNODES
 NODE_RANK=$SLURM_PROCID 
-WORLD_SIZE=$SLURM_GPUS
+WORLD_SIZE= 4
+echo "world size: $WORLD_SIZE"
 
 
 
@@ -63,6 +63,6 @@ SRUN_ARGS=" \
     --kill-on-bad-exit=1 \
     "
 
-clear; srun $SRUN_ARGS --jobid $SLURM_JOB_ID bash -c "$LAUNCHER $CMD" 2>&1 | tee ~/logs/%x-%j.txt
+clear; srun $SRUN_ARGS --jobid $SLURM_JOB_ID bash -c "$LAUNCHER $CMD" 2>&1 | tee ~/logs/%x-%A-HelloCluster.out
 
 echo "END TIME: $(date)"
