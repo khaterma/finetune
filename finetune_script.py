@@ -5,6 +5,7 @@ import pandas as pd
 from datasets import Dataset
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+import torch.nn as nn
 
 
 # Configure the BitsAndBytesConfig to enable  8-bit quantization with CPU offloading
@@ -79,6 +80,8 @@ class fine_tune_llm():
         tokenizer.padding_side = "right"
         model = prepare_model_for_kbit_training(model, self.peft_config)
         model = get_peft_model(model, self.peft_config)
+        model = nn.DataParallel(model)
+        model=  model.to("cuda")
 
         return model, tokenizer
 

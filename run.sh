@@ -16,8 +16,7 @@
 #SBATCH --error /work/dlclarge2/khaterm-nltoSPARQL/finetune/logs/%x-%A-HelloCluster.err    # STDERR  short: -e logs/%x-%A-job_name.out
 
 # Define the amount of memory required per node
-#SBATCH --mem 40GB
-#SBATCH --time=10:00
+#SBATCH --mem 8GB
 
 echo "Workingdir: $PWD";
 echo "Started at $(date)";
