@@ -1,4 +1,4 @@
-from peft import AutoPeftModelForCausalLM, LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from peft import AutoPeftModelForCausalLM, LoraConfig, get_peft_model, prepare_model_for_kbit_training, PeftModel
 from trl import SFTTrainer
 from transformers import TrainingArguments
 import pandas as pd
@@ -22,11 +22,12 @@ import logging
 
 class fine_tune_llm():
     def __init__(self):
-        self.model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.1"
+        self.model_name_or_path = "mistral-7b-v0.1.Q4_K_M.gguf"
         self.tokenizer_name = "mistralai/Mistral-7B-v0.1"
         self.output_dir = "./fine_tuned_model"
         self.datset_path =  "lcquad_train_prompt.csv"
         self.test_dataset_path = "lcquad_test.csv"
+        self.fine_tuned_path = "./fine_tuned_sparql_model/checkpoint-300"
 
         #logging.set_verbosity_info()
 
@@ -69,7 +70,7 @@ class fine_tune_llm():
                 llm_int8_enable_fp32_cpu_offload=True,
                 )
         model = AutoModelForCausalLM.from_pretrained(
-                    "mistralai/Mistral-7B-Instruct-v0.1",
+                    self.model_name_or_path,
                     device_map="auto",
                     quantization_config=nf4_config,
                     use_cache=False, )
@@ -80,10 +81,10 @@ class fine_tune_llm():
         tokenizer.padding_side = "right"
         model = prepare_model_for_kbit_training(model, self.peft_config)
         model = get_peft_model(model, self.peft_config)
-        model = nn.DataParallel(model)
-        model=  model.to("cuda")
 
         return model, tokenizer
+    
+    
 
     def prepare_dataset(self):
         train = pd.read_csv('lcquad_train_prompt.csv')
@@ -109,7 +110,34 @@ class fine_tune_llm():
         hf_logging.set_verbosity_info()
         return 
 
+    def generate_response(self, model, tokenizer, prompt):
+        prompt = self.process_prompt(prompt)
+        inputs = tokenizer(prompt, return_tensors="pt", padding=True)
+        prompt_length = len(tokenizer(prompt)["input_ids"])
+        outputs = model.generate(inputs.input_ids, max_length=prompt_length+50, num_return_sequences=1, temperature=0.9)
+        output = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        print(output)
+        return output
 
+    def process_prompt(self, prompt):
+        content_end = prompt.find("### Response:") + len("### Response:")
+        prompt = prompt[:content_end] + '</s>'
+        return prompt
+    
+    def merge_model(self):
+        model, tokenizer = self.load_model()
+        model = PeftModel.from_pretrained( model, self.fine_tuned_path)
+        model = model.merge_and_unload()
+        model.save_pretrained(self.output_dir)
+        logging.info("Model saved to output directory")
+        return model, tokenizer
+    
+    def upload_model(self, model):
+        model.push_to_hub("khaterm/fine_tuned_sparql_model")
+        logging.info("Model uploaded to huggingface model hub")
+
+        
+        
     
 
     def train(self,model,dataset,test_dataset, tokenizer):
@@ -136,7 +164,16 @@ logging.info("Logger initiated")
 
 dataset , test = fine_tune_llm.prepare_dataset()
 logging.info("dataset prepared and split into train and test sets")
-model, tokenizer = fine_tune_llm.load_model()
-logging("Model loaded")
-print("Dataset prepared")
+model, tokenizer = fine_tune_llm.merge_model()
+logging.info("Model merged")
+for i in range(10):
+    fine_tune_llm.generate_response(model, tokenizer, prompt = dataset['prompt'][0])
+
+logging.info("10 Responses generated") 
+fine_tune_llm.upload_model(model=model)
+
+#generate response to prompt, 
+
+
+#let's load a gguf model and try it out then bitches ? 
 

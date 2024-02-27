@@ -5,8 +5,9 @@
 #SBATCH --partition alldlc_gpu-rtx2080
 
 # Define a name for your job
-#SBATCH --job-name HelloCluster             # short: -J <job name>
+#SBATCH --job-name SPARQL             # short: -J <job name>
 #SBATCH --gres=gpu:4
+#SBATCH --nodes=1
 
 # Define the files to write the outputs of the job to.
 # Please note the SLURM will not create this directory for you, and if it is missing, no logs will be saved.
@@ -14,9 +15,11 @@
 
 #SBATCH --output /work/dlclarge2/khaterm-nltoSPARQL/finetune/logs/%x-%A-HelloCluster.out   # STDOUT  %x and %A will be replaced by the job name and job id, respectively. short: -o logs/%x-%A-job_name.out
 #SBATCH --error /work/dlclarge2/khaterm-nltoSPARQL/finetune/logs/%x-%A-HelloCluster.err    # STDERR  short: -e logs/%x-%A-job_name.out
-
+#SBATCH --export=HF_TOKEN="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"
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=mahmoudkhater098@gmail.com
 # Define the amount of memory required per node
-#SBATCH --mem 8GB
+#SBATCH --mem 60GB
 
 echo "Workingdir: $PWD";
 echo "Started at $(date)";
