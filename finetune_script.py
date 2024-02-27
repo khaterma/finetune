@@ -133,7 +133,7 @@ class fine_tune_llm():
         return model, tokenizer
     
     def upload_model(self, model):
-        model.push_to_hub("khaterm/fine_tuned_sparql_model")
+        model.push_to_hub("khaterm/fine_tuned_sparql_model2")
         logging.info("Model uploaded to huggingface model hub")
 
         
@@ -151,6 +151,7 @@ class fine_tune_llm():
             tokenizer=tokenizer,
             packing=True,
             dataset_text_field = "prompt",
+            dataset_label_field = "sparql_wikidata_label",
             
 
         )
@@ -162,12 +163,17 @@ fine_tune_llm = fine_tune_llm()
 logger = fine_tune_llm.logger()
 logging.info("Logger initiated")
 
+
 dataset , test = fine_tune_llm.prepare_dataset()
 logging.info("dataset prepared and split into train and test sets")
+model, tokenizer = fine_tune_llm.load_model()
+logging.info("Model loaded")
+fine_tune_llm.train(model, dataset, test, tokenizer)
+logging.info("Model trained and saved")
 model, tokenizer = fine_tune_llm.merge_model()
 logging.info("Model merged")
 for i in range(10):
-    fine_tune_llm.generate_response(model, tokenizer, prompt = dataset['prompt'][0])
+    fine_tune_llm.generate_response(model, tokenizer, prompt = dataset['prompt'][i])
 
 logging.info("10 Responses generated") 
 fine_tune_llm.upload_model(model=model)
