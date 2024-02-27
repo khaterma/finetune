@@ -22,7 +22,7 @@ import logging
 
 class fine_tune_llm():
     def __init__(self):
-        self.model_name_or_path = "mistral-7b-v0.1.Q4_K_M.gguf"
+        self.model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.1"
         self.tokenizer_name = "mistralai/Mistral-7B-v0.1"
         self.output_dir = "./fine_tuned_model"
         self.datset_path =  "lcquad_train_prompt.csv"
