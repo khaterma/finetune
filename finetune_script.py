@@ -92,10 +92,8 @@ class fine_tune_llm():
         test = pd.read_csv('lcquad_test.csv')
         train['question'] = train['question'].astype(str)
         test['question'] = test['question'].astype(str)
+        train['prompt'] = "### Question: " + train['question'] + "### Response: " + train['sparql_wikidata_label']
         dataset = Dataset.from_pandas(train)
-        for i in range (len(dataset)):
-            content_end = dataset['prompt'][i].str.find("### Response:") + len("### Response:")
-            dataset['prompt'] = dataset['prompt'][i].str[:content_end] + dataset['sparql_wikidata_label'] 
         eval_dataset = dataset.select(range(500))
         train_dataset = dataset.select(range(500, len(dataset)))
         test_dataset = Dataset.from_pandas(test)
@@ -161,6 +159,7 @@ class fine_tune_llm():
         self.trainer.save_model(self.output_dir)
 
 
+
 fine_tune_llm = fine_tune_llm()
 logger = fine_tune_llm.logger()
 logging.info("Logger initiated")
@@ -179,8 +178,6 @@ for i in range(10):
 
 logging.info("10 Responses generated") 
 fine_tune_llm.upload_model(model=model)
-
-#generate response to prompt, 
 
 
 #let's load a gguf model and try it out then bitches ? 
