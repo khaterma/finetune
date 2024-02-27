@@ -92,6 +92,8 @@ class fine_tune_llm():
         train['question'] = train['question'].astype(str)
         test['question'] = test['question'].astype(str)
         dataset = Dataset.from_pandas(train)
+        content_end = dataset['prompt'].str.find("### Response:") + len("### Response:")
+        dataset['prompt'] = dataset['prompt'].str[:content_end] + dataset['sparql_wikidata_label'] 
         eval_dataset = dataset.select(range(500))
         train_dataset = dataset.select(range(500, len(dataset)))
         test_dataset = Dataset.from_pandas(test)
@@ -151,8 +153,6 @@ class fine_tune_llm():
             tokenizer=tokenizer,
             packing=True,
             dataset_text_field = "prompt",
-            dataset_label_field = "sparql_wikidata_label",
-            
 
         )
         self.trainer.train()
