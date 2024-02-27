@@ -88,12 +88,14 @@ class fine_tune_llm():
 
     def prepare_dataset(self):
         train = pd.read_csv('lcquad_train_prompt.csv')
+        train['prompt']
         test = pd.read_csv('lcquad_test.csv')
         train['question'] = train['question'].astype(str)
         test['question'] = test['question'].astype(str)
         dataset = Dataset.from_pandas(train)
-        content_end = dataset['prompt'].str.find("### Response:") + len("### Response:")
-        dataset['prompt'] = dataset['prompt'].str[:content_end] + dataset['sparql_wikidata_label'] 
+        for i in range (len(dataset)):
+            content_end = dataset['prompt'][i].str.find("### Response:") + len("### Response:")
+            dataset['prompt'] = dataset['prompt'][i].str[:content_end] + dataset['sparql_wikidata_label'] 
         eval_dataset = dataset.select(range(500))
         train_dataset = dataset.select(range(500, len(dataset)))
         test_dataset = Dataset.from_pandas(test)
